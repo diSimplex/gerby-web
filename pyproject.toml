@@ -1,0 +1,35 @@
+[project]
+name = "gerby-web"
+version = "0.0.1"
+description = "."
+authors = [
+    {name = "Stephen Gaito", email = "stephen@perceptisys.co.uk"},
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "gerby @ git+https://github.com/gerby-project/gerby-website.git",
+    "setuptools>=69.1.1",
+    "waitress>=3.0.0",
+    "plasTeX @ git+https://github.com/diSimplex/plastex.git@merged",
+]
+requires-python = ">=3.10"
+license = {text = "Apache2.0"}
+
+[project.scripts]
+gerbyRun = "gerbyRunner.cli:cli"
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool.pdm.scripts]
+post_install = {	composite = [
+    "echo Installing JQuery-Bonsai CSS",
+    "echo ----------------------------",
+		"git clone --depth=1 https://github.com/aexmachina/jquery-bonsai /tmp/jquery-bonsai",
+		"cp /tmp/jquery-bonsai/jquery.bonsai.css .venv/lib/python3.11/site-packages/gerby/static/css/",
+		"rm -rf /tmp/jquery-bonsai",
+    "echo ----------------------------",
+		"echo All done!"
+]}
+
