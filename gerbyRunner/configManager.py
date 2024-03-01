@@ -85,6 +85,17 @@ def loadConfig(cmdArgs) :
   if 'pdf' not in config :
     computePath(config, 'pdf', config['document'], extension='pdf')
 
+  # compute absolute path for local templates
+  if 'templates_dir' in config :
+    templatesDir = config['templates_dir']
+    if templatesDir.startswith('~') :
+      templatesDir= os.path.expanduser(templatesDir)
+    elif templatesDir.startswith('/') :
+      pass
+    else :
+      templatesDir = os.path.abspath(templatesDir)
+    config['templates_dir'] = templatesDir
+
   # Monkey-patch the imported constants in gerby.configuration
   for aConst in gerbyConsts :
     lConst = aConst.lower()

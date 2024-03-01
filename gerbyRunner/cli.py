@@ -42,20 +42,23 @@ def cli() :
 
   # Adjust the Flask logging levels....
   # actually I am not sure where/how the Flask logger is created
-  # and it does not seem to log to the console....
   #
   # see: https://flask.palletsprojects.com/en/3.0.x/quickstart/#logging
   #
-  #gLogger = gerby.application.app.logger
-  #print(type(gLogger))
-  #gLogger.setLevel(logging.INFO)
-  #gLogger.info("starting the gerby webserver
+  if 'flask_log_level' in config :
+    gLogger = gerby.application.app.logger
+    gLogger.setLevel(config['flask_log_level'])
+
+  # If the user has specified their own templates directory then use it
+  if 'templates_dir' in config :
+    gerby.application.app.template_folder = config['templates_dir']
 
   # start the Gerby Flask App using Waitress
   if not config['quiet'] :
     print("\nYour Waitress will serve you on:")
     print(f"  http://{config['host']}:{config['port']}")
     print("")
+
   serve(
     gerby.application.app.wsgi_app,
     host=config['host'],
