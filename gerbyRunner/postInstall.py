@@ -29,6 +29,7 @@ def patches() :
     print("----------------------------")
     print("patching gerby website")
     os.system(f"sed -i 's/comments = SqliteDatabase(COMMENTS);/comments = SqliteDatabase(None)/g' {sitePackagesDir}/gerby/database.py")
+    os.system(f"sed -i 's|\\\/div|\/div|g' {sitePackagesDir}/gerby/tools/update.py")
     print("----------------------------")
     print("patching Bleach Markdown Extension")
     os.system(f"sed -i 's/, md_globals//g' {sitePackagesDir}/mdx_bleach/extension.py")
