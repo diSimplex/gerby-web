@@ -23,13 +23,5 @@ requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
 [tool.pdm.scripts]
-post_install = {	composite = [
-    "echo Installing JQuery-Bonsai CSS",
-    "echo ----------------------------",
-		"git clone --depth=1 https://github.com/aexmachina/jquery-bonsai /tmp/jquery-bonsai",
-		"cp /tmp/jquery-bonsai/jquery.bonsai.css .venv/lib/python3.11/site-packages/gerby/static/css/",
-		"rm -rf /tmp/jquery-bonsai",
-    "echo ----------------------------",
-		"echo All done!"
-]}
+post_install = {	call = "gerbyRunner.postInstall:patches" }
 

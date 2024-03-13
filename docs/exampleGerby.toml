@@ -1,0 +1,57 @@
+# This is an example `gerby.toml`
+# used to configure the `gerybRun` tool
+# all options (unless specified otherwiase) MUST be in lowercase
+
+# Gerby configuration (uses the following defaults if not specified)
+
+#document = 'document'
+#unit = 'section'
+#depth = 0
+#path = '<currentWorkingDirectory>'
+#paux = '<docuemnt>.paux'
+#tags = '<document>.tags'
+#pdf = '<document>.pdf'
+#comments = 'db/comments.sqlite'
+#database = 'db/<document>.sqlite'
+
+# Gerby Runner configuration (the following are the defaults)
+
+#port = 5000
+#host = '127.0.0.1'
+#working_dir = '.'
+#base_url =
+#github_url = 'https://github.com/stacks/stacks-project'
+
+# Optional TEMPLATES_DIR specifies templates for this gerby instance. If
+# this is not specified, then the templates distributed with the gerby
+# library are used.
+
+#templates_dir = 'templates'
+
+# Logging levels (if not present, then no logging takes place)
+
+#flask_log_level = INFO
+#waitress_log_level = INFO
+
+# Gerby Runner Command line options (can be specified on the command line)
+
+#verbose = False
+#quiet = False
+
+# Gerby command line options (if any of the following exist, then gerby
+# will skip the corresponding step -- all of the following are case
+# sensitive).
+
+#noTags = True
+#noProofs = True
+#noFootnotes = True
+#noSearch = True
+#noParts = True
+#noInactivityCheck = True
+#noDependencies = True
+#noExtras = True
+#noNames = True
+#noBibliography = True
+#noCitations = True
+#noTagStats = True
+#noBookStats = True

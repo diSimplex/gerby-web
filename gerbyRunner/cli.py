@@ -29,10 +29,12 @@ def cli() :
     help="Be quiet [False]"
   )
 
-  # load the TOML configuration file
+  # load the TOML configuration file...
+  # which monkey patches the gerby.configuration values
   config = loadConfig(vars(parser.parse_args()))
 
   # update the gerby website databases
+  # which uses the monkey patched gerby.configuration values
   updateGerby(config)
 
   # Adjust the Waitress logging levels....
