@@ -36,7 +36,6 @@ def monkeyPatchDatabases(collectionName, collectionConfig) :
 
 def monkeyPatchWebServerConfig(
   collectionName, collectionConfig,
-  databaseName, databaseConfig,
   verbose
 ) :
   webConfig = collectionConfig['webserver']

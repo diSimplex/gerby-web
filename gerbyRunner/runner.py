@@ -52,24 +52,12 @@ def cli() :
       collectionConfig = aCollectionConfig
       break
 
-  databaseName = None
-  for aDatabaseName, aDatabaseConfig in config['tags.databases'].items() :
-    if aDatabaseName.lower() == config.cmdArgs['collection'] :
-      databaseName = aDatabaseName
-      databaseConfig = aDatabaseConfig
-      break
-
   if not collectionName :
     print(f"There is no configuration for the {collectionName} collection")
     sys.exit(1)
 
-  if not databaseName :
-    print(f"There is no configuration for the {databaseName} database")
-    sys.exit(1)
-
   monkeyPatchWebServerConfig(
     collectionName, collectionConfig,
-    databaseName, databaseConfig,
     config.cmdArgs['verbose']
   )
 
