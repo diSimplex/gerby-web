@@ -1,4 +1,5 @@
 
+import glob
 import logging
 import yaml
 
@@ -23,87 +24,109 @@ import gerby.configuration
 # replaced by the existence or absence of the corresponding values in the
 # `gerbyRun` script's TOML loaded config dictionary.
 
-def updateGerby(config) :
-
+def updateGerby(collectionName, collectionConfig) :
   # setup the basic logger for the tools.update
-  logging.basicConfig(stream=sys.stdout)
   log = logging.getLogger(__name__)
   log.setLevel(logging.INFO)
 
   # monkey-patch this logger back into gerby.tools.update
   gerby.tools.update.log = log
 
-  # create database if it doesn't exist already
-  dbDir = os.path.dirname(gerby.configuration.DATABASE)
-  if not os.path.exists(dbDir):
-    os.makedirs(dbDir, exist_ok=True)
-  db.init(gerby.configuration.DATABASE)
-  if not os.path.isfile(gerby.configuration.DATABASE):
-    for model in [Tag, Proof, Slogan, History, Reference, Commit, Change, Dependency]:
-      model.create_table()
-    log.info("Created database")
-
-  dbDir = os.path.dirname(gerby.configuration.COMMENTS)
-  if not os.path.exists(dbDir):
-    os.makedirs(dbDir, exist_ok=True)
-  comments.init(gerby.configuration.COMMENTS)
-  if not os.path.isfile(gerby.configuration.COMMENTS):
-    Comment.create_table()
-    log.info("Created COMMENTS database")
-
-  # the information on disk
+  # get the tag information
   tags = getTags()
-  files = [f for f in os.listdir(gerby.configuration.PATH) if os.path.isfile(os.path.join(gerby.configuration.PATH, f)) and f != "index"] # index is always created
+  #print(yaml.dump(tags))
 
-  if 'noTags' not in config :
+  # get the list of relevant files..
+  #
+  # We simulate the following list compression:
+  # files = [f for f in os.listdir(gerby.configuration.PATH) if
+  # os.path.isfile(os.path.join(gerby.configuration.PATH, f)) and f !=
+  # "index"] # index is always created
+
+  os.chdir(gerby.configuration.PATH)
+  files = []
+  for aFile in glob.glob('**', recursive=True) :
+    if not os.path.isfile(aFile) : continue
+    if aFile.endswith('index') : continue
+    files.append(aFile)
+  #print(yaml.dump(files))
+
+
+  if 'noTags' not in collectionConfig :
     log.info("Importing tags")
     importTags(files)
 
-  if 'noProofs' not in config :
+  if 'noProofs' not in collectionConfig :
     log.info("Importing proofs")
     importProofs(files)
     removeProofs(files)
 
-  if 'noFootnotes' not in config :
+  if 'noFootnotes' not in collectionConfig :
     log.info("Importing footnotes")
     importFootnotes(files)
 
-  if 'noSearch' not in config :
+  if 'noSearch' not in collectionConfig :
     log.info("Populating the search tables")
     makeSearchTable()
 
-  if 'noParts' not in config :
-    log.info("Assigning chapters to parts")
-    assignParts()
+  origPath = gerby.configuration.PATH
+  for aDocumentName, aDocumentConfig in collectionConfig['documents'].items() :
+    print("------------------------------------------")
+    print(f"Working on: [{aDocumentName}]")
+    #print(yaml.dump(aDocumentConfig))
+    gerby.configuration.PATH = os.path.join(origPath, aDocumentName)
+    #print(gerby.configuration.PATH)
+    gerby.configuration.PAUX = os.path.splitext(os.path.join(
+      aDocumentConfig['dir'],
+      aDocumentConfig['doc']
+    ))[0]+'.paux'
+    #print(gerby.configuration.PAUX)
 
-  if 'noInactivityCheck' not in config :
+    # need to NOT drop the Part table... but rather combine them across
+    # fingerPieces / diSimplex-chapters
+
+    if 'noParts' not in collectionConfig :
+      log.info("Assigning chapters to parts")
+      assignParts()
+
+    # each fingerPiece / diSimplex-chapter has a collection of names which
+    # each individually get updated into the database.
+
+    if 'noNames' not in collectionConfig :
+      log.info("Importing names of tags")
+      nameTags(tags)
+
+    # We really need to figure out how to combine these statistics from
+    # each fingerPiece / diSimplex-chapter
+
+    #if 'noBookStats' not in collectionConfig :
+    #  log.info("Processing book statistics")
+    #  computeBookStats()
+
+  print("------------------------------------------")
+  gerby.configuration.PATH = origPath
+
+  if 'noInactivityCheck' not in collectionConfig :
     log.info("Checking inactivity")
     checkInactivity(tags)
 
-  if 'noDependencies' not in config :
+  if 'noDependencies' not in collectionConfig :
     log.info("Creating dependency data")
     makeDependency()
 
-  if 'noExtras' not in config :
+  if 'noExtras' not in collectionConfig :
     log.info("Importing history, slogans, etc.")
     importExtras(files)
 
-  if 'noNames' not in config :
-    log.info("Importing names of tags")
-    nameTags(tags)
-
-  if 'noBibliography' not in config :
+  if 'noBibliography' not in collectionConfig :
     log.info("Importing bibliography")
     makeBibliography(files)
 
-  if 'noCitations' not in config :
+  if 'noCitations' not in collectionConfig :
     log.info("Managing internal citations")
     makeInternalCitations()
 
-  if 'noTagStats' not in config :
+  if 'noTagStats' not in collectionConfig :
     log.info("Computing statistics")
     computeTagStats()
 
-  if 'noBookStats' not in config :
-    log.info("Processing book statistics")
-    computeBookStats()

@@ -26,8 +26,8 @@ chmod a+x $HOME/.local/bin/$cmdName
 
 ##########################################################################
 
-#installCmd gerbyInit
-installCmd gerbyRun
+installCmd gerbyCompiler
+installCmd gerbyRunner
 
 echo ""
 echo "Editable gerbyRun commands have been created"
