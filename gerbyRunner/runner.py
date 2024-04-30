@@ -41,13 +41,18 @@ def cli() :
     },
   })
 
-  if not config.cmdArgs['collection'] :
-    print("You MUST choose ONE collection for this web server to work!")
-    sys.exit(1)
+  if config.cmdArgs['collection'] :
+    requestedCollection = config.cmdArgs['collection'].lower()
+  else :
+    if config['collection'] :
+      requestedCollection = config['collection'].lower()
+    else :
+      print("You MUST choose ONE collection for this web server to work!")
+      sys.exit(1)
 
   collectionName = None
   for aCollectionName, aCollectionConfig in config['gerby.collections'].items() :
-    if aCollectionName.lower() == config.cmdArgs['collection'] :
+    if aCollectionName.lower() == requestedCollection :
       collectionName = aCollectionName
       collectionConfig = aCollectionConfig
       break
