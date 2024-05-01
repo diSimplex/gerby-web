@@ -1,0 +1,7 @@
+#!/bin/bash
+
+reset
+
+echo "Entering running testgr containter"
+
+podman exec -it testgrc /bin/sh

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+reset
+
+echo "Building image in $(pwd)"
+echo "-----------"
+ls
+echo "-----------"
+
+if podman image exists testgri ; then
+  podman image rm -f testgri
+fi
+
+podman build -t testgri .

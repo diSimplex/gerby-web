@@ -1,0 +1,7 @@
+#!/bin/bash
+
+reset
+
+echo "Removing container testgrc"
+
+podman container rm -f testgrc

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+reset
+
+echo "Running image in testgw on http://localhost:8080"
+
+if podman container exists testgrc ; then
+  podman container rm -f testgrc
+fi
+
+podman run -it \
+ -p 127.0.0.1:8080:5000 \
+ -v ./podmanData:/gerby-data \
+ --name=testgrc \
+ testgri

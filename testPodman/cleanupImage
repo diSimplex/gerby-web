@@ -1,0 +1,7 @@
+#!/bin/bash
+
+reset
+
+echo "Removing image testgri"
+
+podman image rm -f testgri
