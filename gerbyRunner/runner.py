@@ -12,9 +12,30 @@ from lpilGerbyConfig.config import ConfigManager
 # gerby.configuration module's constants.
 #
 from gerbyRunner.monkeyPatchConfig import monkeyPatchWebServerConfig
-from gerbyRunner.databases import openCreateDatabases
+from gerbyRunner.databases import openCreateDatabases, LPiLToc
+from gerby.database import Tag
 
 import gerby.application
+from flask import render_template
+
+@gerby.application.app.route("/lpiltoc")
+def showLpilToc() :
+  tocEntries = list(LPiLToc.select( LPiLToc, Tag ).join(Tag))
+  #print(yaml.dump(tocEntries))
+  #print("---------------------------------------------------------")
+  #for anEntry in tocEntries :
+  #  print(anEntry.id, anEntry.entry.tag, anEntry.entry.name)
+  #print("---------------------------------------------------------")
+
+  #tags = list(Tag.select())
+  #print("---------------------------------------------------------")
+  #for aTag in tags :
+  #  print(aTag.id, aTag.tag, aTag.name)
+  #print("---------------------------------------------------------")
+
+  return render_template(
+    "toc.lpil.html", tocEntries=tocEntries
+  )
 
 def cli() :
   logging.basicConfig(stream=sys.stdout)
@@ -94,6 +115,8 @@ def cli() :
     print("\nYour Waitress will serve you on:")
     print(f"  http://{webConfig['host']}:{webConfig['port']}")
     print("")
+
+  #print(list(gerby.application.app.view_functions.keys()))
 
   serve(
     gerby.application.app.wsgi_app,

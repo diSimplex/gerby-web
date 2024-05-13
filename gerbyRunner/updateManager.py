@@ -7,6 +7,27 @@ from gerby.tools.update import *
 from gerby.database import *
 import gerby.configuration
 
+from gerbyRunner.databases import LPiLToc
+
+def clearLpilToc() :
+  if LPiLToc.table_exists():
+    LPiLToc.drop_table()
+  LPiLToc.create_table()
+
+def addLpilTocEntries(docDir, tags, log) :
+  for anAuxPath in glob.iglob("**/*.aux", root_dir=docDir, recursive=True) :
+    anAuxPath = os.path.join(docDir, anAuxPath)
+    with open(anAuxPath) as auxFile :
+      for aLine in auxFile :
+        for aLine in auxFile :
+          if aLine.startswith("\\newlabel") :
+            aLabel = aLine.split("{")[1].rstrip("}")
+            try :
+              theTag = Tag.get(Tag.label == aLabel)
+              anEntry = LPiLToc.create(entry=theTag)
+              anEntry.save()
+            except DoesNotExist as err :
+              log.warning(repr(err))
 
 # The following code has been adapted from the corresponding code
 # (following the line `if __name__ == "__main__":`) in the file
@@ -69,6 +90,7 @@ def updateGerby(collectionName, collectionConfig) :
     log.info("Populating the search tables")
     makeSearchTable()
 
+  clearLpilToc()
   origPath = gerby.configuration.PATH
   for aDocumentName, aDocumentConfig in collectionConfig['documents'].items() :
     print("------------------------------------------")
@@ -81,6 +103,10 @@ def updateGerby(collectionName, collectionConfig) :
       aDocumentConfig['doc']
     ))[0]+'.paux'
     #print(gerby.configuration.PAUX)
+
+    if 'noLPiLToc' not in collectionConfig :
+      log.info("Adding LPiL TOC entries")
+      addLpilTocEntries(aDocumentConfig['dir'], tags, log)
 
     # need to NOT drop the Part table... but rather combine them across
     # fingerPieces / diSimplex-chapters
@@ -130,3 +156,4 @@ def updateGerby(collectionName, collectionConfig) :
     log.info("Computing statistics")
     computeTagStats()
 
+  db.close()
