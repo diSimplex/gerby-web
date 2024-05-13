@@ -20,7 +20,16 @@ import sys
 def patches() :
     pythonVersionInfo = sys.version_info
     pythonVersion = f"{pythonVersionInfo[0]}.{pythonVersionInfo[1]}"
-    sitePackagesDir = f".venv/lib/python{pythonVersion}/site-packages"
+    sys.path.append(f".venv/lib/python{pythonVersion}/site-packages")
+    # check each path in the sys.path to find where gerby has been installed
+    for aPath in sys.path :
+      print("Trying:", aPath)
+      if os.path.exists(os.path.join(aPath, 'gerby')) :
+        sitePackagesDir = aPath
+        print("FOUND site-packages:", sitePackagesDir)
+        break
+
+    # Now apply our patches
     print("Installing JQuery-Bonsai CSS")
     print("----------------------------")
     os.system("git clone --depth=1 https://github.com/aexmachina/jquery-bonsai /tmp/jquery-bonsai")
@@ -28,10 +37,10 @@ def patches() :
     os.system("rm -rf /tmp/jquery-bonsai")
     print("----------------------------")
     print("patching gerby website")
-    os.system(f"sed -i '/type = CharField/i \ \ doc = CharField(null=True)' {sitePackagesDir}/gerby/database.py")
-    os.system(f"sed -i '/pieces = filename.split/a \ \ \ \ pieces[0] = typeParts[-1]' {sitePackagesDir}/gerby/tools/update.py")
-    os.system(f"sed -i '/pieces = filename.split/a \ \ \ \ typeParts = pieces[0].split(os.sep)' {sitePackagesDir}/gerby/tools/update.py")
-    os.system(f"sed -i '/tag.type = pieces/i \ \ \ \ tag.doc = typeParts[1]' {sitePackagesDir}/gerby/tools/update.py")
+    os.system(f"sed -i '/type = CharField/i \\ \\ doc = CharField(null=True)' {sitePackagesDir}/gerby/database.py")
+    os.system(f"sed -i '/pieces = filename.split/a \\ \\ \\ \\ pieces[0] = typeParts[-1]' {sitePackagesDir}/gerby/tools/update.py")
+    os.system(f"sed -i '/pieces = filename.split/a \\ \\ \\ \\ typeParts = pieces[0].split(os.sep)' {sitePackagesDir}/gerby/tools/update.py")
+    os.system(f"sed -i '/tag.type = pieces/i \\ \\ \\ \\ tag.doc = typeParts[1]' {sitePackagesDir}/gerby/tools/update.py")
     print("----------------------------")
     print("patching Bleach Markdown Extension")
     os.system(f"sed -i 's/, md_globals//g' {sitePackagesDir}/mdx_bleach/extension.py")

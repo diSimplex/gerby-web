@@ -24,7 +24,7 @@ def showLpilToc() :
   #print(yaml.dump(tocEntries))
   #print("---------------------------------------------------------")
   #for anEntry in tocEntries :
-  #  print(anEntry.id, anEntry.entry.tag, anEntry.entry.name)
+  #  print(anEntry.id, anEntry.entry.tag, anEntry.entry.doc, anEntry.entry.type, anEntry.entry.name)
   #print("---------------------------------------------------------")
 
   #tags = list(Tag.select())
