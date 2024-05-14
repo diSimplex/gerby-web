@@ -20,12 +20,16 @@ from flask import render_template
 
 @gerby.application.app.route("/lpiltoc")
 def showLpilToc() :
-  tocEntries = list(LPiLToc.select( LPiLToc, Tag ).join(Tag))
-  #print(yaml.dump(tocEntries))
-  #print("---------------------------------------------------------")
-  #for anEntry in tocEntries :
-  #  print(anEntry.id, anEntry.entry.tag, anEntry.entry.doc, anEntry.entry.type, anEntry.entry.name)
-  #print("---------------------------------------------------------")
+  tocDict = {}
+  tocDocs = []
+  print("---------------------------------------------------------")
+  for anEntry in LPiLToc.select( LPiLToc, Tag ).join(Tag) :
+    print(anEntry.id, anEntry.entry.tag, anEntry.entry.doc, anEntry.entry.type, anEntry.entry.name)
+    theDoc = anEntry.entry.doc
+    if theDoc not in tocDocs : tocDocs.append(theDoc)
+    if theDoc not in tocDict : tocDict[theDoc] = []
+    tocDict[theDoc].append(anEntry)
+  print("---------------------------------------------------------")
 
   #tags = list(Tag.select())
   #print("---------------------------------------------------------")
@@ -34,7 +38,7 @@ def showLpilToc() :
   #print("---------------------------------------------------------")
 
   return render_template(
-    "toc.lpil.html", tocEntries=tocEntries
+    "toc.lpil.html", tocDocs=tocDocs, tocDict=tocDict
   )
 
 def cli() :
