@@ -12,7 +12,7 @@ from lpilGerbyConfig.config import ConfigManager
 # gerby.configuration module's constants.
 #
 from gerbyRunner.monkeyPatchConfig import monkeyPatchWebServerConfig
-from gerbyRunner.databases import openCreateDatabases, LPiLToc
+from gerbyRunner.databases import openCreateDatabases, LPiLToc, LPiLMD
 from gerby.database import Tag
 
 import gerby.application
@@ -40,6 +40,22 @@ def showLpilToc() :
   return render_template(
     "toc.lpil.html", tocDocs=tocDocs, tocDict=tocDict
   )
+
+@gerby.application.app.route("/lpilreadme/<string:docname>")
+def showLpilRedme(docname) :
+  html = ""
+  for anEntry in LPiLMD.select().where(LPiLMD.doc == docname) :
+    html = anEntry.readme
+    break
+  return render_template('lpil.readme.html', docname=docname, html=html)
+
+@gerby.application.app.route("/lpiltodo/<string:docname>")
+def showLpilTodo(docname) :
+  html=""
+  for anEntry in LPiLMD.select().where(LPiLMD.doc == docname) :
+    html = anEntry.todo
+    break
+  return render_template('lpil.todo.html', docname=docname, html=html)
 
 def cli() :
   logging.basicConfig(stream=sys.stdout)

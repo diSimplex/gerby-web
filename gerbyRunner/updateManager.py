@@ -1,17 +1,17 @@
 
 import glob
 import logging
+import markdown
 import yaml
 
 from gerby.tools.update import *
 from gerby.database import *
 import gerby.configuration
 
-from gerbyRunner.databases import LPiLToc
+from gerbyRunner.databases import LPiLToc, LPiLMD
 
 def clearLpilToc() :
-  if LPiLToc.table_exists():
-    LPiLToc.drop_table()
+  if LPiLToc.table_exists() : LPiLToc.drop_table()
   LPiLToc.create_table()
 
 def addLpilTocEntries(docDir, tags, log) :
@@ -28,6 +28,29 @@ def addLpilTocEntries(docDir, tags, log) :
               anEntry.save()
             except DoesNotExist as err :
               log.warning(repr(err))
+
+def clearLpilMd() :
+  if LPiLMD.table_exists() : LPiLMD.drop_table()
+  LPiLMD.create_table()
+
+def addLpilMdEntry(docName, docConfig, log) :
+  docDir = docConfig['dir']
+  readmePath = os.path.join(docDir, 'Readme.md')
+  readmeHtml = ""
+  if os.path.isfile(readmePath) :
+    with open(readmePath) as readmeFile :
+      readmeHtml = markdown.markdown(readmeFile.read())
+  todoPath = os.path.join(docDir, 'ToDo.md')
+  todoHtml = ""
+  if os.path.isfile(todoPath) :
+    with open(todoPath) as todoFile :
+      todoHtml = markdown.markdown(todoFile.read())
+  anEntry = LPiLMD.create(
+    doc=docName,
+    readme=readmeHtml,
+    todo=todoHtml
+  )
+  anEntry.save()
 
 # The following code has been adapted from the corresponding code
 # (following the line `if __name__ == "__main__":`) in the file
@@ -91,6 +114,8 @@ def updateGerby(collectionName, collectionConfig) :
     makeSearchTable()
 
   clearLpilToc()
+  clearLpilMd()
+
   origPath = gerby.configuration.PATH
   for aDocumentName, aDocumentConfig in collectionConfig['documents'].items() :
     print("------------------------------------------")
@@ -103,6 +128,10 @@ def updateGerby(collectionName, collectionConfig) :
       aDocumentConfig['doc']
     ))[0]+'.paux'
     #print(gerby.configuration.PAUX)
+
+    if 'noMarkdown' not in collectionConfig :
+      log.info("Adding markdown")
+      addLpilMdEntry(aDocumentName, aDocumentConfig, log)
 
     if 'noLPiLToc' not in collectionConfig :
       log.info("Adding LPiL TOC entries")

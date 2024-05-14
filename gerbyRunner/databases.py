@@ -9,11 +9,17 @@ import gerby.configuration
 class LPiLToc(BaseModel) :
   entry = ForeignKeyField(Tag)
 
+class LPiLMD(BaseModel) :
+  doc    = CharField(unique=True)
+  readme = TextField()
+  todo   = TextField()
+
 dbModels = [
   Tag, Proof, Slogan,
   History, Reference,
   Commit, Change,
-  Dependency, LPiLToc
+  Dependency,
+  LPiLToc, LPiLMD
 ]
 
 def openCreateDatabases() :
