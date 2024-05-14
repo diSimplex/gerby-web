@@ -49,3 +49,7 @@ def patches() :
     os.system(f"sed -i \"s/styles=self.styles/#styles=self.styles/g\" {sitePackagesDir}/mdx_bleach/postprocessors.py")
     print("----------------------------")
     print("All done!")
+
+
+if __name__ == "__main__" :
+  patches()

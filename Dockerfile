@@ -12,7 +12,7 @@ COPY gerbyRunner /gerby-website/gerbyRunner
 
 RUN set -eux && \
   pip install ./gerby-website && \
-  python -c "import gerbyRunner.postInstall; gerbyRunner.postInstall.patches()" && \
+  python -m gerbyRunner.postInstall && \
   mkdir /gerby-data
 
 WORKDIR /gerby-website
