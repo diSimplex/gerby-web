@@ -22,14 +22,14 @@ from flask import render_template
 def showLpilToc() :
   tocDict = {}
   tocDocs = []
-  print("---------------------------------------------------------")
+  #print("---------------------------------------------------------")
   for anEntry in LPiLToc.select( LPiLToc, Tag ).join(Tag) :
-    print(anEntry.id, anEntry.entry.tag, anEntry.entry.doc, anEntry.entry.type, anEntry.entry.name)
+    #print(anEntry.id, anEntry.entry.tag, anEntry.entry.doc, anEntry.entry.type, anEntry.entry.name)
     theDoc = anEntry.entry.doc
     if theDoc not in tocDocs : tocDocs.append(theDoc)
     if theDoc not in tocDict : tocDict[theDoc] = []
     tocDict[theDoc].append(anEntry)
-  print("---------------------------------------------------------")
+  #print("---------------------------------------------------------")
 
   #tags = list(Tag.select())
   #print("---------------------------------------------------------")
