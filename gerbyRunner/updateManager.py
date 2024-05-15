@@ -8,7 +8,7 @@ from gerby.tools.update import *
 from gerby.database import *
 import gerby.configuration
 
-from gerbyRunner.databases import LPiLToc, LPiLMD
+from gerbyRunner.databases import LPiLToc, LPiLDocs
 
 def clearLpilToc() :
   if LPiLToc.table_exists() : LPiLToc.drop_table()
@@ -30,8 +30,8 @@ def addLpilTocEntries(docDir, tags, log) :
               log.warning(repr(err))
 
 def clearLpilMd() :
-  if LPiLMD.table_exists() : LPiLMD.drop_table()
-  LPiLMD.create_table()
+  if LPiLDocs.table_exists() : LPiLDocs.drop_table()
+  LPiLDocs.create_table()
 
 def addLpilMdEntry(docName, docConfig, log) :
   docDir = docConfig['dir']
@@ -45,10 +45,11 @@ def addLpilMdEntry(docName, docConfig, log) :
   if os.path.isfile(todoPath) :
     with open(todoPath) as todoFile :
       todoHtml = markdown.markdown(todoFile.read())
-  anEntry = LPiLMD.create(
+  anEntry = LPiLDocs.create(
     doc=docName,
     readme=readmeHtml,
-    todo=todoHtml
+    todo=todoHtml,
+    gitUrl=docConfig['gitUrl']
   )
   anEntry.save()
 

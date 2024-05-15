@@ -9,8 +9,9 @@ import gerby.configuration
 class LPiLToc(BaseModel) :
   entry = ForeignKeyField(Tag)
 
-class LPiLMD(BaseModel) :
+class LPiLDocs(BaseModel) :
   doc    = CharField(unique=True)
+  gitUrl = CharField()
   readme = TextField()
   todo   = TextField()
 
@@ -19,7 +20,7 @@ dbModels = [
   History, Reference,
   Commit, Change,
   Dependency,
-  LPiLToc, LPiLMD
+  LPiLToc, LPiLDocs
 ]
 
 def openCreateDatabases() :

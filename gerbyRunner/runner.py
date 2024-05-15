@@ -12,7 +12,7 @@ from lpilGerbyConfig.config import ConfigManager
 # gerby.configuration module's constants.
 #
 from gerbyRunner.monkeyPatchConfig import monkeyPatchWebServerConfig
-from gerbyRunner.databases import openCreateDatabases, LPiLToc, LPiLMD
+from gerbyRunner.databases import openCreateDatabases, LPiLToc, LPiLDocs
 from gerby.database import Tag
 
 import gerby.application
@@ -31,20 +31,24 @@ def showLpilToc() :
     tocDict[theDoc].append(anEntry)
   #print("---------------------------------------------------------")
 
-  #tags = list(Tag.select())
+  gitUrls = {}
   #print("---------------------------------------------------------")
-  #for aTag in tags :
-  #  print(aTag.id, aTag.tag, aTag.name)
+  for aDoc in LPiLDocs.select() :
+    #print(aDoc.doc, aDoc.gitUrl.replace('.git', ''))
+    gitUrls[aDoc.doc] = aDoc.gitUrl.replace('.git','')
   #print("---------------------------------------------------------")
 
   return render_template(
-    "toc.lpil.html", tocDocs=tocDocs, tocDict=tocDict
+    "toc.lpil.html",
+    gitUrls=gitUrls,
+    tocDocs=tocDocs,
+    tocDict=tocDict
   )
 
 @gerby.application.app.route("/lpilreadme/<string:docname>")
 def showLpilRedme(docname) :
   html = ""
-  for anEntry in LPiLMD.select().where(LPiLMD.doc == docname) :
+  for anEntry in LPiLDocs.select().where(LPiLDocs.doc == docname) :
     html = anEntry.readme
     break
   return render_template('lpil.readme.html', docname=docname, html=html)
@@ -52,7 +56,7 @@ def showLpilRedme(docname) :
 @gerby.application.app.route("/lpiltodo/<string:docname>")
 def showLpilTodo(docname) :
   html=""
-  for anEntry in LPiLMD.select().where(LPiLMD.doc == docname) :
+  for anEntry in LPiLDocs.select().where(LPiLDocs.doc == docname) :
     html = anEntry.todo
     break
   return render_template('lpil.todo.html', docname=docname, html=html)
