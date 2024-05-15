@@ -23,7 +23,7 @@ def showLpilToc() :
   tocDict = {}
   tocDocs = []
   #print("---------------------------------------------------------")
-  for anEntry in LPiLToc.select( LPiLToc, Tag ).join(Tag) :
+  for anEntry in LPiLToc.select( LPiLToc, Tag ).join(Tag).order_by(LPiLToc.id) :
     #print(anEntry.id, anEntry.entry.tag, anEntry.entry.doc, anEntry.entry.type, anEntry.entry.name)
     theDoc = anEntry.entry.doc
     if theDoc not in tocDocs : tocDocs.append(theDoc)
@@ -32,14 +32,17 @@ def showLpilToc() :
   #print("---------------------------------------------------------")
 
   gitUrls = {}
+  docOrder = []
   #print("---------------------------------------------------------")
-  for aDoc in LPiLDocs.select() :
+  for aDoc in LPiLDocs.select().order_by(LPiLDocs.id) :
     #print(aDoc.doc, aDoc.gitUrl.replace('.git', ''))
+    docOrder.append(aDoc.doc)
     gitUrls[aDoc.doc] = aDoc.gitUrl.replace('.git','')
   #print("---------------------------------------------------------")
 
   return render_template(
     "toc.lpil.html",
+    docOrder=docOrder,
     gitUrls=gitUrls,
     tocDocs=tocDocs,
     tocDict=tocDict

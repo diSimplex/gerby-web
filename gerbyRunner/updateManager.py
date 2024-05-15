@@ -29,11 +29,11 @@ def addLpilTocEntries(docDir, tags, log) :
             except DoesNotExist as err :
               log.warning(repr(err))
 
-def clearLpilMd() :
+def clearLpilDocs() :
   if LPiLDocs.table_exists() : LPiLDocs.drop_table()
   LPiLDocs.create_table()
 
-def addLpilMdEntry(docName, docConfig, log) :
+def addLpilDocsEntry(docName, docConfig, log) :
   docDir = docConfig['dir']
   readmePath = os.path.join(docDir, 'Readme.md')
   readmeHtml = ""
@@ -115,10 +115,12 @@ def updateGerby(collectionName, collectionConfig) :
     makeSearchTable()
 
   clearLpilToc()
-  clearLpilMd()
+  clearLpilDocs()
 
   origPath = gerby.configuration.PATH
-  for aDocumentName, aDocumentConfig in collectionConfig['documents'].items() :
+  for aDocumentName in collectionConfig['docOrder'] :
+    if aDocumentName not in collectionConfig['documents'] : continue
+    aDocumentConfig = collectionConfig['documents'][aDocumentName]
     print("------------------------------------------")
     print(f"Working on: [{aDocumentName}]")
     #print(yaml.dump(aDocumentConfig))
@@ -132,7 +134,7 @@ def updateGerby(collectionName, collectionConfig) :
 
     if 'noMarkdown' not in collectionConfig :
       log.info("Adding markdown")
-      addLpilMdEntry(aDocumentName, aDocumentConfig, log)
+      addLpilDocsEntry(aDocumentName, aDocumentConfig, log)
 
     if 'noLPiLToc' not in collectionConfig :
       log.info("Adding LPiL TOC entries")
